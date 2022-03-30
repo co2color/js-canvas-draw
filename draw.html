@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>draw</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .btn {
+      padding: 2px 4px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="canvas" width="400" height="400"></canvas>
+  <div>
+    <button class="btn" id="bold">bold</button>
+    <button class="btn" id="thin">thin</button>
+    <button class="btn" id="getImg">getImg</button>
+  </div>
+  <p id="p" style="width: 400px; overflow: hidden; text-overflow: ellipsis"></p>
+  <img id="img" style="width: 200px; height: 200px" />
+  <script>
+    const ctx = canvas.getContext('2d')
+    ctx.strokeStyle = 'pink'
+    ctx.lineWidth = 1
+    ctx.fillStyle = '#eee'
+    ctx.fillRect(0, 0, 400, 400)
+    bold.onclick = () => {
+      ctx.lineWidth++
+    }
+    thin.onclick = () => {
+      ctx.lineWidth--
+    }
+    getImg.onclick = () => {
+      p.innerText = canvas.toDataURL('image/png')
+      img.src = canvas.toDataURL('image/png')
+      img.style.visibility = 'visible'
+      console.log(canvas.toDataURL('image/png'))
+    }
+const isPc = () => {
+  const userAgentInfo = navigator.userAgent.toLowerCase()
+  const agents = [
+    'android',
+    'iphone',
+    'symbianos',
+    'windows phone',
+    'ipad',
+    'ipod',
+  ]
+  let flag = true
+  for (var v = 0; v < agents.length; v++) {
+    if (userAgentInfo.indexOf(agents[v]) > 0) {
+      flag = false
+      break
+    }
+  }
+  return flag
+}
+
+    let x = 0
+    let y = 0
+    let drawing = false
+    img.style.visibility = 'hidden'
+
+    // pc:mouse
+    if (isPc()) {
+      canvas.addEventListener('mousedown', (e) => {
+        drawing = true
+        x = e.x
+        y = e.y
+        ctx.moveTo(x, y)
+        ctx.lineTo(x + 1, y + 1)
+        ctx.stroke()
+        ctx.beginPath()
+      })
+      canvas.addEventListener('mousemove', (e) => {
+        if (drawing) {
+          e && e.preventDefault()
+          ctx.moveTo(x, y)
+          x = e.x
+          y = e.y
+          ctx.lineTo(x, y)
+          ctx.stroke()
+          ctx.beginPath()
+        }
+      })
+      canvas.addEventListener('mouseup', (e) => {
+        console.log('end', e)
+        drawing = false
+      })
+      canvas.addEventListener('mouseleave', (e) => {
+        console.log('leave', e)
+        drawing = false
+      })
+    } else {
+      // getImg.parentNode.removeChild(getImg)
+      // 禁h5下拉刷新
+      document.body.addEventListener(
+        'touchmove',
+        (e) => {
+          e.preventDefault()
+        },
+        { passive: false }
+      )
+      // h5:touch
+      canvas.addEventListener('touchstart', (e) => {
+        console.log('touchstart', e)
+        drawing = true
+        x = e.touches[0].pageX - e.touches[0].target.offsetLeft
+        y = e.touches[0].pageY - e.touches[0].target.offsetTop
+        ctx.moveTo(x, y)
+        ctx.lineTo(x + 1, y + 1)
+        ctx.stroke()
+        ctx.beginPath()
+      })
+      canvas.addEventListener('touchmove', (e) => {
+        console.log('touchmove', e)
+        if (drawing) {
+          e && e.preventDefault()
+          ctx.moveTo(x, y)
+          x = e.touches[0].pageX - e.touches[0].target.offsetLeft
+          y = e.touches[0].pageY - e.touches[0].target.offsetTop
+          ctx.lineTo(x, y)
+          ctx.stroke()
+          ctx.beginPath()
+        }
+      })
+      canvas.addEventListener('touchend', (e) => {
+        console.log('touchend', e)
+        drawing = false
+      })
+    }
+  </script>
+</body>
+
+</html>
